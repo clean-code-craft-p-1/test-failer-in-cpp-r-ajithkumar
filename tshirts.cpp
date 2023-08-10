@@ -1,22 +1,34 @@
 #include <iostream>
-#include <assert.h>
+#include "tshirts.h"
 
-char size(int cms) {
+char Tshirts::size(int cms)
+{
     char sizeName = '\0';
-    if(cms < 38) {
+    if (cms < 38) {
         sizeName = 'S';
-    } else if(cms > 38 && cms < 42) {
+    }
+    else if (cms > 38 && cms < 42) {
         sizeName = 'M';
-    } else if(cms > 42) {
+    }
+    else if (cms > 42) {
         sizeName = 'L';
     }
     return sizeName;
 }
 
-int main() {
-    assert(size(37) == 'S');
-    assert(size(40) == 'M');
-    assert(size(43) == 'L');
+void TestTshirts::testforTshirtSizes()
+{
+    assert(Tshirts::size(37) == 'S');
+    assert(Tshirts::size(38) == 'S');
+    assert(Tshirts::size(40) == 'M');
+    assert(Tshirts::size(42) == 'M');
+    assert(Tshirts::size(43) == 'L');
     std::cout << "All is well (maybe!)\n";
+}
+
+int main() {
+
+    TestTshirts::testforTshirtSizes();
+
     return 0;
 }

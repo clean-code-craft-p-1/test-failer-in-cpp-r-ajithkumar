@@ -1,46 +1,43 @@
-#include <string>
 #include <iostream>
 #include <assert.h>
-
-using namespace std;
+#include "weatherreport.h"
 
 namespace WeatherSpace
 {    
-    class IWeatherSensor {
-        public:
-            virtual double TemperatureInC() const = 0;
-            virtual int Precipitation() const = 0;
-            virtual int Humidity() const = 0;
-            virtual int WindSpeedKMPH() const = 0;
-    };
-    /// <summary>
-    /// This is a stub for a weather sensor. For the sake of testing 
-    /// we create a stub that generates weather data and allows us to
-    /// test the other parts of this application in isolation
-    /// without needing the actual Sensor during development
-    /// </summary>
-    class SensorStub : public IWeatherSensor {
-        int Humidity() const override {
-            return 72;
-        }
+    int SensorStub::Humidity() const
+    {
+        return 72;
+    }
+    int SensorStub::Precipitation() const
+    {
+        return 70;
+    }
+    double SensorStub::TemperatureInC() const
+    {
+        return 26;
+    }
+    int SensorStub::WindSpeedKMPH() const
+    {
+        return 52;
+    }
 
-        int Precipitation() const override {
-            return 70;
-        }
+    int HighPrecipitationStub::Precipitation() const
+    {
+        //high precipitation(> 60)
+        return 61;
+    }
 
-        double TemperatureInC() const override {
-            return 26;
-        }
+    int HighPrecipitationStub::WindSpeedKMPH() const
+    {
+        //low wind - speed(< 50)
+        return 49;
+    }
 
-        int WindSpeedKMPH() const override {
-            return 52;
-        }
-    };
-    string Report(const IWeatherSensor& sensor)
+   std::string Report(const IWeatherSensor& sensor)
     {
         int precipitation = sensor.Precipitation();
         // precipitation < 20 is a sunny day
-        string report = "Sunny Day";
+        std::string report = "Sunny Day";
 
         if (sensor.TemperatureInC() > 25)
         {
@@ -52,12 +49,12 @@ namespace WeatherSpace
         return report;
     }
     
-    void TestRainy()
+   void TestRainy()
     {
         SensorStub sensor;
-        string report = Report(sensor);
-        cout << report << endl;
-        assert(report.find("rain") != string::npos);
+        std::string report = Report(sensor);
+        std::cout << report << std::endl;
+        assert(report.find("rain") != std::string::npos);
     }
 
     void TestHighPrecipitation()
@@ -68,14 +65,27 @@ namespace WeatherSpace
 
         // strengthen the assert to expose the bug
         // (function returns Sunny day, it should predict rain)
-        string report = Report(sensor);
+        std::string report = Report(sensor);
         assert(report.length() > 0);
-    }
+        assert(report == "Alert, Stormy with heavy rain");
+
+        HighPrecipitationStub possiblePrecipitation;
+        report = Report(possiblePrecipitation);
+        assert(report == "Alert, Stormy with heavy rain");
+    }   
+}
+
+void TestWeatherSpace::testForWeatherReport()
+{
+    WeatherSpace::TestRainy();
+    WeatherSpace::TestHighPrecipitation();
+    std::cout << "All is well (maybe)\n";
 }
 
 int main() {
-    WeatherSpace::TestRainy();
-    WeatherSpace::TestHighPrecipitation();
-    cout << "All is well (maybe)\n";
+
+    TestWeatherSpace::testForWeatherReport();
+
     return 0;
 }
+
